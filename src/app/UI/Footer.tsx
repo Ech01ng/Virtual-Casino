@@ -7,14 +7,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="text-yellow-500 text-lg font-semibold mb-4">About Virtual Casino</h3>
+            <h3 className="text-yellow-500 text-lg font-semibold mb-4">About The Virtual Casino</h3>
             <p className="text-gray-300">
               Experience the thrill of casino games from the comfort of your home. 
               Play classic games like Blackjack and Slot Machine with virtual chips.
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links 
           <div>
             <h3 className="text-yellow-500 text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
@@ -34,7 +34,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div>*/}
 
           {/* Contact Info */}
           <div>

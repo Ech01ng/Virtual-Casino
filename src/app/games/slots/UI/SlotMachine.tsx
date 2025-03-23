@@ -217,11 +217,6 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
           {isSpinning ? 'Spinning...' : 'Spin'}
         </button>
       </div>
-
-      {/* Game Description */}
-      <div className="text-gray-400 text-center mt-4 text-sm lg:text-base">
-        Traditional 3-reel slot machine with classic symbols and exciting payouts
-      </div>
     </div>
   );
 } 

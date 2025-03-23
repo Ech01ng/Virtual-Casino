@@ -82,7 +82,11 @@ export default function SlotsPage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <NavBar />
-      <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
+      <main className="flex-1 container mx-auto px-4 py-8 flex flex-col items-center justify-center">
+        <h1 className="text-4xl font-bold text-center mb-8">Slots</h1>
+        <div className="text-gray-400 text-center mb-8 text-sm lg:text-base">
+          Traditional 3-reel slot machine with classic symbols and exciting payouts
+        </div>
         <SlotMachine onSpin={handleSpin} chips={chips} />
       </main>
       <Footer />

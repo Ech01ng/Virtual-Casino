@@ -26,6 +26,9 @@ export default function BlackjackPage() {
       <div className="flex-1 p-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-8">Blackjack</h1>
+          <div className="text-gray-400 text-center mb-8 text-sm lg:text-base">
+            The classic casino game of blackjack with a modern twist
+          </div>
           <Blackjack
             chips={chips}
             onBet={handleBet}

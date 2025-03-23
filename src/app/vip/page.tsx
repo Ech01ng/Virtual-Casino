@@ -1,6 +1,8 @@
 "use client";
 
+import React from 'react';
 import NavBar from '../UI/NavBar';
+import Footer from '../UI/Footer';
 
 /**
  * VIP Page Component
@@ -49,114 +51,103 @@ export default function VIPPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      {/* Navigation Bar */}
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <NavBar />
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <section className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-6">VIP Program</h1>
-          <p className="text-xl text-gray-300 mb-8">
-            Join our exclusive VIP program and unlock premium benefits
-          </p>
-          <button className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
-            Join VIP Club
-          </button>
-        </section>
-
-        {/* VIP Levels */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">VIP Levels</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {vipLevels.map((level) => (
-              <div key={level.level} className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
-                <h3 className="text-2xl font-bold mb-4 text-yellow-500">{level.level}</h3>
-                <p className="text-gray-300 mb-6">{level.requirements}</p>
-                <ul className="space-y-3">
-                  {level.benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-center gap-2 text-gray-300">
-                      <span className="text-yellow-500">✓</span>
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8">VIP Program</h1>
+        
+        {/* VIP Tiers */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {/* Bronze Tier */}
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Bronze</h2>
+            <ul className="space-y-2 text-gray-300 mb-6">
+              <li>• 5% Daily Bonus</li>
+              <li>• Exclusive Chat Access</li>
+              <li>• Basic Support Priority</li>
+            </ul>
+            <button className="w-full bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              Join Bronze
+            </button>
           </div>
-        </section>
 
-        {/* Additional Benefits */}
-        <section className="bg-gray-800 rounded-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold mb-6">Additional VIP Benefits</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Silver Tier */}
+          <div className="bg-gray-800 rounded-lg p-6 border-2 border-yellow-500">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Silver</h2>
+            <ul className="space-y-2 text-gray-300 mb-6">
+              <li>• 10% Daily Bonus</li>
+              <li>• VIP Chat Access</li>
+              <li>• Priority Support</li>
+              <li>• Exclusive Events</li>
+            </ul>
+            <button className="w-full bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              Join Silver
+            </button>
+          </div>
+
+          {/* Gold Tier */}
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Gold</h2>
+            <ul className="space-y-2 text-gray-300 mb-6">
+              <li>• 15% Daily Bonus</li>
+              <li>• VIP Chat Access</li>
+              <li>• 24/7 Priority Support</li>
+              <li>• Exclusive Events</li>
+              <li>• Personal VIP Host</li>
+            </ul>
+            <button className="w-full bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              Join Gold
+            </button>
+          </div>
+        </div>
+
+        {/* Benefits Section */}
+        <section className="bg-gray-800 rounded-lg p-6 mb-12">
+          <h2 className="text-2xl font-bold text-yellow-500 mb-4">VIP Benefits</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-xl font-bold mb-4">Exclusive Events</h3>
+              <h3 className="text-xl font-bold mb-2">Exclusive Rewards</h3>
               <p className="text-gray-300">
-                Access to VIP-only tournaments, special promotions, and exclusive events.
+                Get access to special promotions, higher bonuses, and exclusive events.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-bold mb-4">Personal Support</h3>
+              <h3 className="text-xl font-bold mb-2">Priority Support</h3>
               <p className="text-gray-300">
-                Dedicated account manager and priority support for all your needs.
+                Receive faster response times and dedicated support channels.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-bold mb-4">Higher Limits</h3>
+              <h3 className="text-xl font-bold mb-2">Special Events</h3>
               <p className="text-gray-300">
-                Increased deposit and withdrawal limits for VIP members.
+                Participate in VIP-only tournaments and special gaming events.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-bold mb-4">Special Rewards</h3>
+              <h3 className="text-xl font-bold mb-2">Personal Host</h3>
               <p className="text-gray-300">
-                Exclusive bonuses, cashback offers, and luxury gifts.
+                Get a dedicated VIP host to assist with all your gaming needs.
               </p>
             </div>
           </div>
         </section>
 
         {/* How to Join */}
-        <section className="bg-gray-800 rounded-lg p-8">
-          <h2 className="text-3xl font-bold mb-6">How to Join</h2>
-          <ol className="list-decimal list-inside space-y-4 text-gray-300">
-            <li>Create an account at Virtual Casino</li>
-            <li>Make qualifying deposits to reach your desired VIP level</li>
-            <li>Contact our VIP team to activate your membership</li>
-            <li>Start enjoying your exclusive benefits</li>
-          </ol>
+        <section className="bg-gray-800 rounded-lg p-6">
+          <h2 className="text-2xl font-bold text-yellow-500 mb-4">How to Join</h2>
+          <div className="space-y-4 text-gray-300">
+            <p>1. Start playing your favorite games</p>
+            <p>2. Earn points through regular gameplay</p>
+            <p>3. Reach the required points threshold</p>
+            <p>4. Get automatically upgraded to the next tier</p>
+            <p className="mt-4">
+              <span className="font-bold">Note:</span> Points are earned based on your wagering activity.
+              The more you play, the faster you'll climb the VIP ladder!
+            </p>
+          </div>
         </section>
       </main>
-
-      {/* Footer Section */}
-      <footer className="bg-black/50 border-t border-gray-700 mt-12">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-lg font-bold mb-4">About Us</h4>
-              <p className="text-gray-400">Virtual Casino provides a safe and entertaining gaming experience for players worldwide.</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Terms & Conditions</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Responsible Gaming</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold mb-4">Contact Us</h4>
-              <p className="text-gray-400">Email: support@virtualcasino.com</p>
-              <p className="text-gray-400">24/7 Support Available</p>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-            <p>&copy; 2024 Virtual Casino. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 } 

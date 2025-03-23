@@ -1,6 +1,8 @@
 "use client";
 
+import React from 'react';
 import NavBar from '../UI/NavBar';
+import Footer from '../UI/Footer';
 
 /**
  * Promotions Page Component
@@ -34,71 +36,57 @@ export default function PromotionsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      {/* Navigation Bar */}
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <NavBar />
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8">Promotions</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Welcome Bonus */}
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Welcome Bonus</h2>
+            <p className="text-gray-300 mb-4">
+              Get 1000 free chips when you first join Virtual Casino!
+            </p>
+            <button className="bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              Claim Bonus
+            </button>
+          </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Page Title */}
-        <h1 className="text-4xl font-bold mb-8 text-center">Current Promotions</h1>
+          {/* Daily Rewards */}
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Daily Rewards</h2>
+            <p className="text-gray-300 mb-4">
+              Log in every day to receive free chips and special rewards.
+            </p>
+            <button className="bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              View Rewards
+            </button>
+          </div>
 
-        {/* Promotions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {promotions.map((promo) => (
-            <div key={promo.id} className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
-              <h2 className="text-2xl font-bold mb-4 text-yellow-500">{promo.title}</h2>
-              <p className="text-gray-300 mb-4">{promo.description}</p>
-              <div className="border-t border-gray-700 pt-4">
-                <p className="text-sm text-gray-400 mb-2">{promo.terms}</p>
-                <p className="text-sm text-gray-400">Valid until: {promo.validUntil}</p>
-              </div>
-              <button className="mt-4 w-full bg-yellow-500 text-black py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
-                Claim Offer
-              </button>
-            </div>
-          ))}
+          {/* VIP Program */}
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">VIP Program</h2>
+            <p className="text-gray-300 mb-4">
+              Join our VIP program for exclusive rewards and special treatment.
+            </p>
+            <button className="bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              Learn More
+            </button>
+          </div>
+
+          {/* Special Events */}
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Special Events</h2>
+            <p className="text-gray-300 mb-4">
+              Participate in special events and tournaments for a chance to win big!
+            </p>
+            <button className="bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors">
+              View Events
+            </button>
+          </div>
         </div>
-
-        {/* Terms and Conditions */}
-        <section className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Terms and Conditions</h2>
-          <ul className="list-disc list-inside space-y-2 text-gray-300">
-            <li>All promotions are subject to our general terms and conditions</li>
-            <li>Wagering requirements must be met before withdrawals</li>
-            <li>Only one promotion can be active at a time</li>
-            <li>We reserve the right to modify or cancel promotions at any time</li>
-          </ul>
-        </section>
       </main>
-
-      {/* Footer Section */}
-      <footer className="bg-black/50 border-t border-gray-700 mt-12">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-lg font-bold mb-4">About Us</h4>
-              <p className="text-gray-400">Virtual Casino provides a safe and entertaining gaming experience for players worldwide.</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Terms & Conditions</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Responsible Gaming</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold mb-4">Contact Us</h4>
-              <p className="text-gray-400">Email: support@virtualcasino.com</p>
-              <p className="text-gray-400">24/7 Support Available</p>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-            <p>&copy; 2024 Virtual Casino. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 } 

@@ -7,9 +7,10 @@
 
 "use client";
 
-import { useState } from 'react';
+import React from 'react';
 import GameCardList from "./UI/GameCardList";
 import NavBar from './UI/NavBar';
+import Footer from './UI/Footer';
 
 /*
  - Home Component
@@ -28,14 +29,15 @@ export default function Home() {
     {
       id: 'blackjack',
       name: 'Blackjack',
-      image: '/images/blackjack-preview.jpg'
+      image: '/jack.jpg'
     },
     {
       id: 'roulette',
       name: 'Roulette',
-      image: '/images/roulette-preview.jpg'
+      image: '/roul.jpg'
     },
-    {
+    /*un-comment when everything is implemented*/
+    /*{
       id: 'poker',
       name: 'Poker',
       image: '/images/poker-preview.jpg'
@@ -49,7 +51,7 @@ export default function Home() {
       id: 'craps',
       name: 'Craps',
       image: '/images/craps-preview.jpg'
-    }
+    }*/
   ];
 
   /*
@@ -62,15 +64,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col">
       {/* Navigation Bar */}
       <NavBar />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6">Welcome to Virtual Casino</h1>
+          <h1 className="text-5xl font-bold mb-6">Welcome to The Virtual Casino</h1>
           <p className="text-xl text-gray-300 mb-8">
             Experience the thrill of casino gaming from the comfort of your home
           </p>
@@ -105,33 +107,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer Section */}
-      <footer className="bg-black/50 border-t border-gray-700">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-lg font-bold mb-4">About Us</h4>
-              <p className="text-gray-400">Virtual Casino provides a safe and entertaining gaming experience for players worldwide.</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Terms & Conditions</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-yellow-500">Responsible Gaming</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold mb-4">Contact Us</h4>
-              <p className="text-gray-400">Email: support@virtualcasino.com</p>
-              <p className="text-gray-400">24/7 Support Available</p>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-            <p>&copy; 2024 Virtual Casino. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

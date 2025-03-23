@@ -8,7 +8,7 @@
 
 import React from 'react';
 
-/**
+/*
  - Props interface for the GameCard component
  - @interface GameCardProps
  - @property {string} name - The name of the casino game
@@ -21,7 +21,7 @@ interface GameCardProps {
   onPlay: () => void;
 }
 
-/**
+/*
  - GameCard Component
  - A class component that renders a single game card with hover effects and a play button.
 */
@@ -54,7 +54,7 @@ class GameCard extends React.Component<GameCardProps> {
           <h3 className="text-xl font-bold mb-4">{name}</h3>
           {/* Play button with hover effect */}
           <button 
-            className="w-full bg-yellow-500 text-black py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
+            className="w-full bg-yellow-500 text-black py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors cursor-pointer"
             onClick={onPlay}
           >
             Play Now

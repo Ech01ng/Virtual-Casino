@@ -2,7 +2,7 @@
 
 /**
  * Individual Slot Game Page
- * Displays the actual slot machine interface where players can play the game.
+ * This page is currently not used, but might be used in the future.
  */
 
 export default function SlotGamePage({ params }: { params: { id: string } }) {

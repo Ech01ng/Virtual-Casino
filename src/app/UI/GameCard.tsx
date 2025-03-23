@@ -12,10 +12,12 @@ import React from 'react';
  - Props interface for the GameCard component
  - @interface GameCardProps
  - @property {string} name - The name of the casino game
+ - @property {string} image - Optional URL for the game's preview image
  - @property {() => void} onPlay - Callback function triggered when the play button is clicked
 */
 interface GameCardProps {
   name: string;
+  image?: string;
   onPlay: () => void;
 }
 
@@ -29,23 +31,30 @@ class GameCard extends React.Component<GameCardProps> {
    - @returns {JSX.Element} The rendered game card component
   */
   render() {
-    const { name, onPlay } = this.props;
+    const { name, image, onPlay } = this.props;
     
     return (
-      // Main card container with hover effect
-      <div className="bg-gray-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-transform">
-        {/* Game preview area */}
-        <div className="aspect-video bg-gray-700 relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold">{name}</span>
-          </div>
+      <div className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors">
+        {/* Game Preview Area */}
+        <div className="relative h-48 bg-gray-900">
+          {image ? (
+            <img 
+              src={image} 
+              alt={`${name} preview`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-4xl">🎰</span>
+            </div>
+          )}
         </div>
         {/* Card content area */}
-        <div className="p-4">
-          <h4 className="text-xl font-bold mb-2">{name}</h4>
+        <div className="p-6">
+          <h3 className="text-xl font-bold mb-4">{name}</h3>
           {/* Play button with hover effect */}
           <button 
-            className="w-full bg-yellow-500 text-black py-2 rounded font-semibold hover:bg-yellow-400 transition-colors"
+            className="w-full bg-yellow-500 text-black py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
             onClick={onPlay}
           >
             Play Now

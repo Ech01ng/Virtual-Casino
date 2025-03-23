@@ -14,10 +14,12 @@ import GameCard from './GameCard';
  - @interface Game
  - @property {string} id - Unique identifier for the game
  - @property {string} name - Display name of the game
+ - @property {string} image - Optional URL for the game's preview image
 */
 interface Game {
   id: string;
   name: string;
+  image?: string;
 }
 
 /*
@@ -54,6 +56,7 @@ class GameCardList extends React.Component<GameCardListProps> {
           <GameCard
             key={game.id}
             name={game.name}
+            image={game.image}
             onPlay={() => onGameSelect(game.id)}
           />
         ))}

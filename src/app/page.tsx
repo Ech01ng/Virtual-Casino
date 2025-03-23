@@ -18,13 +18,38 @@ import NavBar from './UI/NavBar';
 export default function Home() {
   // Define available casino games
   // Each game has a unique ID and display name
+  // The image is the path to the image file for the game
   const games = [
-    { id: 'slots', name: 'Slots' },
-    { id: 'blackjack', name: 'Blackjack' },
-    { id: 'roulette', name: 'Roulette' },
-    { id: 'poker', name: 'Poker' },
-    { id: 'baccarat', name: 'Baccarat' },
-    { id: 'craps', name: 'Craps' }
+    {
+      id: 'slots',
+      name: 'Slots',
+      image: '/slot.jpg'
+    },
+    {
+      id: 'blackjack',
+      name: 'Blackjack',
+      image: '/images/blackjack-preview.jpg'
+    },
+    {
+      id: 'roulette',
+      name: 'Roulette',
+      image: '/images/roulette-preview.jpg'
+    },
+    {
+      id: 'poker',
+      name: 'Poker',
+      image: '/images/poker-preview.jpg'
+    },
+    {
+      id: 'baccarat',
+      name: 'Baccarat',
+      image: '/images/baccarat-preview.jpg'
+    },
+    {
+      id: 'craps',
+      name: 'Craps',
+      image: '/images/craps-preview.jpg'
+    }
   ];
 
   /*
@@ -49,8 +74,8 @@ export default function Home() {
           <p className="text-xl text-gray-300 mb-8">
             Experience the thrill of casino gaming from the comfort of your home
           </p>
-          <a 
-            href="/vip" 
+          <a
+            href="/vip"
             className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
           >
             Join VIP Club

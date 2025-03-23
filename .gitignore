@@ -39,3 +39,30 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ignore images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.webp
+*.ico
+*.bmp
+
+# Ignore Videos / Audio
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mpeg
+*.mp3
+*.wav
+
+# Ignore Public Folder
+/public/images/*
+/public/videos/*
+/public/audio/*
+/public/documents/*
+/public/downloads/*

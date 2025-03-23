@@ -52,10 +52,15 @@ export default function SlotsPage() {
   /**
    * Handles the spin result
    */
-  const handleSpin = (result: string[]) => {
-    // Deduct bet from balance
-    setChips(prev => prev - bet);
-    
+  const handleSpin = (result: string[], bet: number) => {
+    // If bet is provided, this is the start of the spin
+    if (bet > 0) {
+      // Deduct bet from balance immediately
+      setChips(prev => prev - bet);
+      return;
+    }
+
+    // If no bet is provided, this is the end of the spin with results
     // Calculate and add winnings
     const winAmount = calculateWin(result);
     if (winAmount > 0) {

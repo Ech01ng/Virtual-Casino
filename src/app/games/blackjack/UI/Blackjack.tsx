@@ -141,6 +141,28 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     });
   };
 
+  // Add reshuffling function
+  const reshuffleDeck = () => {
+    const suits: Card['suit'][] = ['♠', '♣', '♥', '♦'];
+    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    
+    const newDeck: Card[] = suits.flatMap(suit =>
+      values.map(value => ({
+        suit,
+        value,
+        numericValue: value === 'A' ? 11 : ['J', 'Q', 'K'].includes(value) ? 10 : parseInt(value)
+      }))
+    );
+
+    // Shuffle deck
+    for (let i = newDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+    }
+
+    return newDeck;
+  };
+
   // Start new game
   const startGame = async () => {
     if (currentBet === 0) {
@@ -148,37 +170,21 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
       return;
     }
 
-    if (deck.length < 10) {
-      // Reshuffle if deck is running low
-      const suits: Card['suit'][] = ['♠', '♣', '♥', '♦'];
-      const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-      
-      const newDeck: Card[] = suits.flatMap(suit =>
-        values.map(value => ({
-          suit,
-          value,
-          numericValue: value === 'A' ? 11 : ['J', 'Q', 'K'].includes(value) ? 10 : parseInt(value)
-        }))
-      );
-
-      // Shuffle deck
-      for (let i = newDeck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
-      }
-
-      setDeck(newDeck);
-    }
-
     setIsDealing(true);
     onBet(currentBet);
 
-    // Deal initial cards
-    const newDeck = [...deck];
-    const playerCards = [newDeck.pop()!, newDeck.pop()!];
-    const dealerCards = [newDeck.pop()!, newDeck.pop()!];
+    // Check if we need to reshuffle
+    let currentDeck = [...deck];
+    if (currentDeck.length < 10) {
+      currentDeck = reshuffleDeck();
+      setDeck(currentDeck);
+    }
 
-    setDeck(newDeck);
+    // Deal initial cards
+    const playerCards = [currentDeck.pop()!, currentDeck.pop()!];
+    const dealerCards = [currentDeck.pop()!, currentDeck.pop()!];
+
+    setDeck(currentDeck);
     setPlayerHand(playerCards);
     setDealerHand(dealerCards);
 
@@ -197,16 +203,25 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
 
   // Player actions
   const hit = async () => {
-    const newDeck = [...deck];
-    const newCard = newDeck.pop()!;
+    let currentDeck = [...deck];
+    if (currentDeck.length < 5) {
+      currentDeck = reshuffleDeck();
+      setDeck(currentDeck);
+      setMessage('Deck reshuffled!');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setMessage('');
+    }
+
+    const newCard = currentDeck.pop()!;
+    const newHand = [...playerHand, newCard];
     
-    setDeck(newDeck);
-    setPlayerHand(prev => [...prev, newCard]);
+    setDeck(currentDeck);
+    setPlayerHand(newHand);
 
     // Animate new card appearing
     await animateCardAppearance(newCard, playerHandRef.current!, 0, playerHand.length);
 
-    if (calculateHandValue([...playerHand, newCard]) > 21) {
+    if (calculateHandValue(newHand) > 21) {
       setGameStatus('ended');
       setMessage('Bust! You lose!');
       onGameEnd('lose');
@@ -224,12 +239,25 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     let currentDeck = [...deck];
 
     while (calculateHandValue(currentDealerHand) <= 16) {
+      if (currentDeck.length < 5) {
+        currentDeck = reshuffleDeck();
+        setDeck(currentDeck);
+        setMessage('Deck reshuffled!');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setMessage('');
+      }
+
       const newCard = currentDeck.pop()!;
-      currentDealerHand.push(newCard);
+      currentDealerHand = [...currentDealerHand, newCard];
       
+      setDeck(currentDeck);
       setDealerHand(currentDealerHand);
+      
       // Animate new card appearing
       await animateCardAppearance(newCard, dealerHandRef.current!, 0, currentDealerHand.length - 1);
+      
+      // Small delay between dealer cards
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     // Determine winner
@@ -267,18 +295,14 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 relative min-h-screen">
+    <div className="flex flex-col items-center gap-6 p-4">
       {/* Rules Dropdown and Game Info Section */}
       <div className="flex flex-col items-center gap-6 w-full">
         <RulesDropdown gameName="Blackjack" rules={blackjackRules} />
-        <div className="text-2xl font-bold">
+        {/* Game Info - Hide on mobile */}
+        <div className="text-2xl font-bold hidden lg:block">
           Chips: {chips}
         </div>
-        {currentBet > 0 && (
-          <div className="text-xl font-bold text-yellow-500">
-            Current Bet: {currentBet}
-          </div>
-        )}
       </div>
 
       {/* Game Message */}
@@ -288,86 +312,103 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
         </div>
       )}
 
-      {/* Game Table */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 w-full max-w-7xl mt-4">
-        {/* Dealer's Hand */}
-        <div className="flex flex-col items-center gap-4 lg:w-1/3">
-          <h2 className="text-xl font-bold">Dealer's Hand ({calculateHandValue(dealerHand)})</h2>
-          <div ref={dealerHandRef} className="relative h-32 w-[360px]">
-            <div className="absolute inset-0 flex justify-center">
-              {dealerHand.map((card, index) => renderCard(card, index, dealerHand.length))}
+      {/* Game Container Card */}
+      <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+        {/* Game Table */}
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 w-full mb-8">
+          {/* Dealer's Hand */}
+          <div className="flex flex-col items-center gap-4 lg:w-1/3">
+            <h2 className="text-xl font-bold">Dealer's Hand ({calculateHandValue(dealerHand)})</h2>
+            <div ref={dealerHandRef} className="relative h-32 w-[360px]">
+              <div className="absolute inset-0 flex justify-center">
+                {dealerHand.map((card, index) => renderCard(card, index, dealerHand.length))}
+              </div>
+            </div>
+          </div>
+
+          {/* Game Controls - Center */}
+          <div className="flex flex-col items-center gap-4 lg:w-1/3">
+            {gameStatus === 'betting' && (
+              <div className="flex flex-wrap gap-4 justify-center">
+                {[10, 25, 50, 100].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => placeBet(amount)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      currentBet === amount
+                        ? 'bg-yellow-500 text-black'
+                        : 'bg-gray-700 text-white hover:bg-gray-600'
+                    }`}
+                  >
+                    {amount}
+                  </button>
+                ))}
+                <button
+                  onClick={startGame}
+                  disabled={currentBet === 0 || isDealing}
+                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-500"
+                >
+                  Deal
+                </button>
+              </div>
+            )}
+
+            {gameStatus === 'playing' && (
+              <div className="flex gap-4">
+                <button
+                  onClick={hit}
+                  disabled={isDealing}
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-500"
+                >
+                  Hit
+                </button>
+                <button
+                  onClick={stand}
+                  disabled={isDealing}
+                  className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:bg-gray-500"
+                >
+                  Stand
+                </button>
+              </div>
+            )}
+
+            {gameStatus === 'ended' && (
+              <button
+                onClick={() => {
+                  setPlayerHand([]);
+                  setDealerHand([]);
+                  setCurrentBet(0);
+                  setGameStatus('betting');
+                  setMessage('');
+                }}
+                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              >
+                New Hand
+              </button>
+            )}
+          </div>
+
+          {/* Player's Hand */}
+          <div className="flex flex-col items-center gap-4 lg:w-1/3">
+            <h2 className="text-xl font-bold">Your Hand ({calculateHandValue(playerHand)})</h2>
+            <div ref={playerHandRef} className="relative h-32 w-[360px]">
+              <div className="absolute inset-0 flex justify-center">
+                {playerHand.map((card, index) => renderCard(card, index, playerHand.length))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Game Controls - Center */}
-        <div className="flex flex-col items-center gap-4 lg:w-1/3">
-          {gameStatus === 'betting' && (
-            <div className="flex flex-wrap gap-4 justify-center">
-              {[10, 25, 50, 100].map((amount) => (
-                <button
-                  key={amount}
-                  onClick={() => placeBet(amount)}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    currentBet === amount
-                      ? 'bg-yellow-500 text-black'
-                      : 'bg-gray-700 text-white hover:bg-gray-600'
-                  }`}
-                >
-                  {amount}
-                </button>
-              ))}
-              <button
-                onClick={startGame}
-                disabled={currentBet === 0 || isDealing}
-                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-500"
-              >
-                Deal
-              </button>
-            </div>
-          )}
-
-          {gameStatus === 'playing' && (
-            <div className="flex gap-4">
-              <button
-                onClick={hit}
-                disabled={isDealing}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-500"
-              >
-                Hit
-              </button>
-              <button
-                onClick={stand}
-                disabled={isDealing}
-                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:bg-gray-500"
-              >
-                Stand
-              </button>
-            </div>
-          )}
-
-          {gameStatus === 'ended' && (
-            <button
-              onClick={() => {
-                setPlayerHand([]);
-                setDealerHand([]);
-                setCurrentBet(0);
-                setGameStatus('betting');
-                setMessage('');
-              }}
-              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-            >
-              New Hand
-            </button>
-          )}
-        </div>
-
-        {/* Player's Hand */}
-        <div className="flex flex-col items-center gap-4 lg:w-1/3">
-          <h2 className="text-xl font-bold">Your Hand ({calculateHandValue(playerHand)})</h2>
-          <div ref={playerHandRef} className="relative h-32 w-[360px]">
-            <div className="absolute inset-0 flex justify-center">
-              {playerHand.map((card, index) => renderCard(card, index, playerHand.length))}
+        {/* Balance and Bet Display */}
+        <div className="mt-6 flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-lg lg:text-2xl font-bold">Balance:</span>
+            <span className="text-xl lg:text-3xl font-bold">${chips}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end">
+              <span className="text-lg lg:text-2xl font-bold">Bet:</span>
+              <span className="text-xl lg:text-3xl font-bold">${currentBet}</span>
             </div>
           </div>
         </div>

@@ -10,7 +10,7 @@ import RulesDropdown from '../../../UI/RulesDropdown';
  */
 
 interface SlotMachineProps {
-  onSpin: (result: string[]) => void;
+  onSpin: (result: string[], bet: number) => void;
   chips: number;
 }
 
@@ -46,13 +46,20 @@ const slotRules = [
 ];
 
 export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
+  const [reels, setReels] = useState(['7️⃣', '7️⃣', '7️⃣']);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [currentBet, setCurrentBet] = useState(10);
+  const reelRefs = useRef<(HTMLElement | null)[]>([]);
+
   // Define available symbols
   const symbols = ['7️⃣', '🍒', '🍋', '🍊', '💎'];
-  
-  // State for reels and spinning
-  const [reels, setReels] = useState<string[]>(['💎', '💎', '💎']);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const reelRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const adjustBet = (amount: number) => {
+    const newBet = currentBet + amount;
+    if (newBet >= 5 && newBet <= chips) {
+      setCurrentBet(newBet);
+    }
+  };
 
   /**
    * Generates a random symbol
@@ -75,6 +82,10 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
    * Handles the spin animation
    */
   const spin = () => {
+    if (currentBet > chips) {
+      return;
+    }
+    
     setIsSpinning(true);
     
     // Generate final results
@@ -83,6 +94,9 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
       getRandomSymbol(),
       getRandomSymbol()
     ];
+
+    // Deduct bet immediately when spinning starts
+    onSpin([], currentBet);
 
     // Create a sequence of animations for each reel
     const animations = reelRefs.current.map((reel, index) => {
@@ -101,7 +115,8 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
         complete: () => {
           if (index === 2) { // Last reel
             setIsSpinning(false);
-            onSpin(finalResults);
+            // Now only pass the results for win calculation
+            onSpin(finalResults, 0);
           }
         },
         update: (anim: anime.AnimeInstance) => {
@@ -134,30 +149,53 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
       {/* Rules Dropdown */}
       <RulesDropdown gameName="Slot Machine" rules={slotRules} />
 
-      {/* Game Info */}
-      <div className="text-2xl font-bold">
-        Chips: {chips}
-      </div>
+      {/* Game Container Card */}
+      <div className="w-full max-w-sm lg:max-w-md bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 shadow-xl">
+        {/* Balance and Bet Display */}
+        <div className="mb-4 lg:mb-6 flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-base lg:text-xl font-bold">Balance:</span>
+            <span className="text-xl lg:text-2xl font-bold">${chips}</span>
+          </div>
+          <div className="flex items-center gap-2 lg:gap-4">
+            <div className="flex flex-col items-end">
+              <span className="text-base lg:text-xl font-bold">Bet:</span>
+              <span className="text-xl lg:text-2xl font-bold">${currentBet}</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => adjustBet(-5)}
+                className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center text-lg lg:text-xl"
+              >
+                -
+              </button>
+              <button
+                onClick={() => adjustBet(5)}
+                className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center text-lg lg:text-xl"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
 
-      {/* Game Container */}
-      <div className="relative">
         {/* Reels Container */}
-        <div className="bg-gray-900 rounded-lg p-4 mb-4">
-          <div className="flex justify-center gap-2 lg:gap-4">
+        <div className="bg-gray-900 rounded-lg p-3 lg:p-4 mb-4">
+          <div className="flex justify-center gap-1 lg:gap-4">
             {reels.map((symbol, index) => (
               <div 
                 key={index}
                 ref={(el) => { reelRefs.current[index] = el; }}
-                className="w-24 h-32 lg:w-32 lg:h-40 bg-gray-800 rounded-lg overflow-hidden border-2 border-yellow-500"
+                className="w-20 h-28 lg:w-28 lg:h-36 bg-gray-800 rounded-lg overflow-hidden border-2 border-yellow-500"
               >
-                <div className="flex flex-col h-full py-2 lg:py-4">
-                  <div className="h-1/3 flex items-center justify-center text-4xl lg:text-5xl mb-2 lg:mb-4">
+                <div className="flex flex-col h-full py-2">
+                  <div className="h-1/3 flex items-center justify-center text-3xl lg:text-5xl mb-1 lg:mb-2">
                     {getPreviousSymbol(symbol)}
                   </div>
-                  <div className="h-1/3 flex items-center justify-center text-4xl lg:text-5xl mb-2 lg:mb-4">
+                  <div className="h-1/3 flex items-center justify-center text-3xl lg:text-5xl mb-1 lg:mb-2">
                     {symbol}
                   </div>
-                  <div className="h-1/3 flex items-center justify-center text-4xl lg:text-5xl">
+                  <div className="h-1/3 flex items-center justify-center text-3xl lg:text-5xl">
                     {getNextSymbol(symbol)}
                   </div>
                 </div>
@@ -178,6 +216,11 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
         >
           {isSpinning ? 'Spinning...' : 'Spin'}
         </button>
+      </div>
+
+      {/* Game Description */}
+      <div className="text-gray-400 text-center mt-4 text-sm lg:text-base">
+        Traditional 3-reel slot machine with classic symbols and exciting payouts
       </div>
     </div>
   );

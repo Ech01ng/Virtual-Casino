@@ -285,7 +285,7 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
 
     if (calculateHandValue(newHand) > 21) {
       setGameStatus('ended');
-      setMessage('Bust! You lose!');
+      setMessage('Bust! You lose your bet.');
       setWinAmount(-currentBet);
       onGameEnd('lose');
     }
@@ -339,21 +339,21 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     const dealerValue = calculateHandValue(currentDealerHand);
 
     if (dealerValue > 21) {
-      setMessage('Dealer busts! You win!');
+      setMessage('Dealer busts! You win! You get 2x your bet.');
       setWinAmount(currentBet * 2);
       onGameEnd('win');
       onWin(currentBet * 2);
     } else if (dealerValue > playerValue) {
-      setMessage('Dealer wins!');
+      setMessage('Dealer wins! You lose your bet.');
       setWinAmount(-currentBet);
       onGameEnd('lose');
     } else if (dealerValue < playerValue) {
-      setMessage('You win!');
+      setMessage('You win! You get 2x your bet.');
       setWinAmount(currentBet * 2);
       onGameEnd('win');
       onWin(currentBet * 2);
     } else {
-      setMessage('Push!');
+      setMessage('Push! You get your bet back.');
       setWinAmount(currentBet);
       onGameEnd('push');
       onWin(currentBet);

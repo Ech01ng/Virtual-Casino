@@ -2,12 +2,24 @@
 - Component: Roulette
 - Purpose: Implements a fully functional roulette game with betting options and animations
 - Features: Number selection, color betting, even/odd betting, and win/loss tracking
+- Wheel Animation and Style from: https://www.npmjs.com/package/react-custom-roulette
 */
 
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
 import RulesDropdown from '../../../UI/RulesDropdown';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the Wheel component with no SSR
+const Wheel = dynamic(() => import('react-custom-roulette').then(mod => mod.Wheel), {
+  ssr: false,
+  loading: () => (
+    <div className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] flex items-center justify-center bg-gray-800 rounded-full">
+      <div className="text-white text-xl">Loading wheel...</div>
+    </div>
+  )
+});
 
 /*
 - Interface Definitions:
@@ -42,7 +54,7 @@ const rouletteRules = [
   },
   {
     title: "House Edge",
-    description: "The green 0 gives the house an edge of approximately 2.7% on all bets"
+    description: "The single green 0 gives the house an edge of 2.7% on all bets"
   }
 ];
 
@@ -60,47 +72,46 @@ interface NumberData {
 - Roulette Numbers Configuration:
 - Defines all numbers on the roulette wheel with their colors
 - Uses -1 to represent '00' for simplicity
-- Numbers are arranged in the standard roulette layout
+- Numbers are arranged in the standard roulette layout with proper spacing
 */
 const rouletteNumbers: NumberData[] = [
   { number: 0, color: 'green' },
-  { number: -1, color: 'green' }, // Using -1 to represent '00'
-  { number: 3, color: 'red' },
-  { number: 2, color: 'black' },
-  { number: 1, color: 'red' },
-  { number: 6, color: 'black' },
-  { number: 5, color: 'red' },
-  { number: 4, color: 'black' },
-  { number: 9, color: 'red' },
-  { number: 8, color: 'black' },
-  { number: 7, color: 'red' },
-  { number: 12, color: 'red' },
-  { number: 11, color: 'black' },
-  { number: 10, color: 'black' },
+  { number: 32, color: 'red' },
   { number: 15, color: 'black' },
-  { number: 14, color: 'black' },
-  { number: 13, color: 'red' },
-  { number: 18, color: 'red' },
-  { number: 17, color: 'black' },
-  { number: 16, color: 'red' },
-  { number: 21, color: 'red' },
-  { number: 20, color: 'black' },
   { number: 19, color: 'red' },
-  { number: 24, color: 'black' },
-  { number: 23, color: 'black' },
-  { number: 22, color: 'red' },
-  { number: 27, color: 'red' },
-  { number: 26, color: 'black' },
+  { number: 4, color: 'black' },
+  { number: 21, color: 'red' },
+  { number: 2, color: 'black' },
   { number: 25, color: 'red' },
-  { number: 30, color: 'red' },
-  { number: 29, color: 'black' },
-  { number: 28, color: 'black' },
-  { number: 33, color: 'red' },
-  { number: 32, color: 'black' },
-  { number: 31, color: 'red' },
+  { number: 17, color: 'black' },
+  { number: 34, color: 'red' },
+  { number: 6, color: 'black' },
+  { number: 27, color: 'red' },
+  { number: 13, color: 'black' },
   { number: 36, color: 'red' },
+  { number: 11, color: 'black' },
+  { number: 30, color: 'red' },
+  { number: 8, color: 'black' },
+  { number: 23, color: 'red' },
+  { number: 10, color: 'black' },
+  { number: 5, color: 'red' },
+  { number: 24, color: 'black' },
+  { number: 16, color: 'red' },
+  { number: 33, color: 'black' },
+  { number: 1, color: 'red' },
+  { number: 20, color: 'black' },
+  { number: 14, color: 'red' },
+  { number: 31, color: 'black' },
+  { number: 9, color: 'red' },
+  { number: 22, color: 'black' },
+  { number: 18, color: 'red' },
+  { number: 29, color: 'black' },
+  { number: 7, color: 'red' },
+  { number: 28, color: 'black' },
+  { number: 12, color: 'red' },
   { number: 35, color: 'black' },
-  { number: 34, color: 'red' }
+  { number: 3, color: 'red' },
+  { number: 26, color: 'black' }
 ];
 
 export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
@@ -129,6 +140,26 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
 
   // Add ref for the rules section
   const rulesRef = useRef<HTMLDivElement>(null);
+
+  // Add ref for the spinning number display
+  const spinningNumberRef = useRef<HTMLDivElement>(null);
+
+  // Add state for wheel data
+  const [wheelData, setWheelData] = useState(
+    rouletteNumbers.map(num => ({
+      option: num.number.toString(),
+      style: {
+        backgroundColor: num.color === 'red' ? '#ef4444' : 
+                         num.color === 'black' ? '#000000' : 
+                         '#22c55e',
+        textColor: num.color === 'green' ? '#000000' : '#ffffff'
+      }
+    }))
+  );
+
+  // Add state for wheel spinning
+  const [mustSpin, setMustSpin] = useState(false);
+  const [prizeNumber, setPrizeNumber] = useState(0);
 
   /*
   - Betting Functions:
@@ -184,7 +215,10 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
       return;
     }
 
+    // Reset states before spinning
     setSpinning(true);
+    setResult(null);
+    setMessage('');
     onBet(currentBet);
 
     // Scroll to the rules section
@@ -196,11 +230,17 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
       });
     }, 100);
 
-    // Simulate wheel spinning
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Get random result
+    // Get random result BEFORE starting the animation
     const winningNumber = rouletteNumbers[Math.floor(Math.random() * rouletteNumbers.length)];
+    const winningIndex = rouletteNumbers.findIndex(n => n.number === winningNumber.number);
+    
+    // Start the wheel spin
+    setPrizeNumber(winningIndex);
+    setMustSpin(true);
+
+    // Wait for wheel to complete its spin animation
+    await new Promise(resolve => setTimeout(resolve, 8000));
+    
     setResult(winningNumber);
 
     // Check if won
@@ -228,7 +268,6 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
     } else {
       setMessage('Better luck next time! You lost $' + currentBet);
     }
-
     setSpinning(false);
   };
 
@@ -269,22 +308,28 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
 
       {/* Game Container Card */}
       <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
-        {/* Roulette Wheel Result */}
-        <div className="flex flex-col items-center mb-8">
-          {result && (
-            <div className={`text-4xl font-bold mb-4 ${
-              result.color === 'red' ? 'text-red-500' : 
-              result.color === 'black' ? 'text-white' : 
-              'text-green-500'
-            }`}>
-              {result.number}
-            </div>
-          )}
-          {spinning && (
-            <div className="text-2xl font-bold animate-pulse">
-              Spinning...
-            </div>
-          )}
+        {/* Roulette Wheel */}
+        <div className="flex justify-center items-center mb-8">
+          <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] flex justify-center items-center">
+            <Wheel
+              mustStartSpinning={mustSpin}
+              prizeNumber={prizeNumber}
+              data={wheelData}
+              onStopSpinning={() => {
+                setMustSpin(false);
+              }}
+              backgroundColors={['#ef4444', '#000000', '#22c55e']}
+              textColors={['#ffffff', '#ffffff', '#000000']}
+              outerBorderColor="#eeeeee"
+              outerBorderWidth={3}
+              innerRadius={0}
+              innerBorderColor="#ffffff"
+              innerBorderWidth={2}
+              radiusLineColor="#ffffff"
+              radiusLineWidth={1}
+              spinDuration={0.7}
+            />
+          </div>
         </div>
 
         {/* Betting Grid */}
@@ -340,18 +385,6 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
                 </button>
               ))}
           </div>
-
-          {/* Green 00 for mobile */}
-          <button
-            onClick={() => selectNumber(-1)}
-            className={`col-span-2 sm:hidden p-2 rounded-lg ${
-              selectedNumber === -1
-                ? 'bg-yellow-500 text-black'
-                : 'bg-green-500 hover:bg-green-600'
-            }`}
-          >
-            00
-          </button>
 
           {/* Desktop grid layout */}
           <div className="hidden sm:contents">
@@ -452,18 +485,6 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
               </button>
             ))}
           </div>
-
-          {/* Green 00 for desktop */}
-          <button
-            onClick={() => selectNumber(-1)}
-            className={`hidden sm:block col-span-6 p-4 rounded-lg ${
-              selectedNumber === -1
-                ? 'bg-yellow-500 text-black'
-                : 'bg-green-500 hover:bg-green-600'
-            }`}
-          >
-            00
-          </button>
         </div>
 
         {/* Betting Options */}

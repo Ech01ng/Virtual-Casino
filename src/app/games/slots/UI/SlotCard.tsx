@@ -1,3 +1,9 @@
+/*
+- Component: SlotCard
+- Purpose: Displays information about a slot game in a card format
+- Features: Game preview, RTP display, volatility indicator, and play button
+*/
+
 "use client";
 
 /**
@@ -8,6 +14,15 @@
 
 import React from 'react';
 
+/*
+- Interface Definitions:
+- SlotCardProps: Defines the props required by the component
+- name: Name of the slot game
+- description: Brief description of the game
+- rtp: Return to Player percentage
+- volatility: Game volatility level (Low/Medium/High)
+- onPlay: Callback function for play button click
+*/
 interface SlotCardProps {
   name: string;
   description: string;
@@ -16,6 +31,11 @@ interface SlotCardProps {
   onPlay: () => void;
 }
 
+/*
+- Component Class:
+- Extends React.Component for class-based component implementation
+- Renders a card with game information and play button
+*/
 class SlotCard extends React.Component<SlotCardProps> {
   render() {
     const { name, description, rtp, volatility, onPlay } = this.props;

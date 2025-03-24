@@ -1,9 +1,20 @@
+/*
+- Component: Blackjack
+- Purpose: Implements a fully functional blackjack game with animations and state management
+- Features: Card dealing, betting, player actions, dealer logic, and win/loss tracking
+*/
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
 import anime from 'animejs';
 import RulesDropdown from '../../../UI/RulesDropdown';
 
+/*
+- Interface Definitions:
+- Card: Defines the structure of a playing card with suit, value, and numeric value
+- BlackjackProps: Defines the props required by the component including callbacks for game events
+*/
 interface Card {
   suit: '♠' | '♣' | '♥' | '♦';
   value: string;
@@ -17,7 +28,11 @@ interface BlackjackProps {
   onWin: (amount: number) => void;
 }
 
-// Add blackjack rules
+/*
+- Game Rules Configuration:
+- Defines the rules displayed in the RulesDropdown component
+- Each rule has a title and description explaining game mechanics
+*/
 const blackjackRules = [
   {
     title: "Basic Rules",
@@ -38,18 +53,36 @@ const blackjackRules = [
 ];
 
 export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackProps) {
-  // Game state
+  /*
+  - State Management:
+  - deck: Array of remaining cards in the deck
+  - playerHand: Array of cards in player's hand
+  - dealerHand: Array of cards in dealer's hand
+  - gameStatus: Current phase of the game (betting/playing/dealerTurn/ended)
+  - message: Display message for game events
+  - winAmount: Amount won or lost in current hand
+  - currentBet: Current bet amount
+  - isDealing: Flag for card dealing animation
+  - Refs for DOM manipulation of card containers
+  */
   const [deck, setDeck] = useState<Card[]>([]);
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
   const [dealerHand, setDealerHand] = useState<Card[]>([]);
   const [gameStatus, setGameStatus] = useState<'betting' | 'playing' | 'dealerTurn' | 'ended'>('betting');
   const [message, setMessage] = useState<string>('');
+  const [winAmount, setWinAmount] = useState<number>(0);
   const [currentBet, setCurrentBet] = useState<number>(0);
   const [isDealing, setIsDealing] = useState(false);
   const playerHandRef = useRef<HTMLDivElement>(null);
   const dealerHandRef = useRef<HTMLDivElement>(null);
 
-  // Initialize deck
+  /*
+  - Deck Initialization:
+  - Creates a new deck of 52 cards
+  - Assigns numeric values to cards (Ace = 11, Face cards = 10)
+  - Shuffles the deck using Fisher-Yates algorithm
+  - Runs once when component mounts
+  */
   useEffect(() => {
     const suits: Card['suit'][] = ['♠', '♣', '♥', '♦'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -71,7 +104,12 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     setDeck(newDeck);
   }, []);
 
-  // Calculate hand value
+  /*
+  - Hand Value Calculation:
+  - Calculates the total value of a hand
+  - Handles Ace values (1 or 11) appropriately
+  - Returns the best possible hand value
+  */
   const calculateHandValue = (hand: Card[]): number => {
     let value = 0;
     let aces = 0;
@@ -92,7 +130,12 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     return value;
   };
 
-  // Render card
+  /*
+  - Card Rendering:
+  - Renders a single card with proper styling
+  - Handles card positioning and spacing
+  - Applies red color to hearts and diamonds
+  */
   const renderCard = (card: Card, index: number, total: number) => {
     const isRed = card.suit === '♥' || card.suit === '♦';
     // Adjust spacing based on number of cards
@@ -120,7 +163,12 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     );
   };
 
-  // Animate card appearance
+  /*
+  - Card Animation:
+  - Animates the appearance of new cards
+  - Uses anime.js for smooth animations
+  - Handles opacity and scale transitions
+  */
   const animateCardAppearance = (card: Card, targetElement: HTMLElement, delay: number, cardIndex: number = 0) => {
     const cardElements = targetElement.children;
     const cardElement = cardElements[cardIndex] as HTMLElement;
@@ -141,7 +189,11 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     });
   };
 
-  // Add reshuffling function
+  /*
+  - Deck Reshuffling:
+  - Creates a new deck when current deck is running low
+  - Maintains game continuity
+  */
   const reshuffleDeck = () => {
     const suits: Card['suit'][] = ['♠', '♣', '♥', '♦'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -163,7 +215,12 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     return newDeck;
   };
 
-  // Start new game
+  /*
+  - Game Start:
+  - Handles initial card dealing
+  - Manages deck reshuffling if needed
+  - Animates card appearances
+  */
   const startGame = async () => {
     if (currentBet === 0) {
       setMessage('Please place a bet first!');
@@ -201,7 +258,12 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     setMessage('');
   };
 
-  // Player actions
+  /*
+  - Player Actions:
+  - Hit: Draws a new card for the player
+  - Handles bust condition
+  - Manages deck reshuffling if needed
+  */
   const hit = async () => {
     let currentDeck = [...deck];
     if (currentDeck.length < 5) {
@@ -224,16 +286,28 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     if (calculateHandValue(newHand) > 21) {
       setGameStatus('ended');
       setMessage('Bust! You lose!');
+      setWinAmount(-currentBet);
       onGameEnd('lose');
     }
   };
 
+  /*
+  - Stand Action:
+  - Ends player's turn
+  - Initiates dealer's turn
+  */
   const stand = () => {
     setGameStatus('dealerTurn');
     dealerTurn();
   };
 
-  // Dealer's turn
+  /*
+  - Dealer's Turn:
+  - Implements dealer logic (hit on 16 or below)
+  - Handles deck reshuffling if needed
+  - Determines game outcome
+  - Updates game state and player balance
+  */
   const dealerTurn = async () => {
     let currentDealerHand = [...dealerHand];
     let currentDeck = [...deck];
@@ -266,17 +340,21 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
 
     if (dealerValue > 21) {
       setMessage('Dealer busts! You win!');
+      setWinAmount(currentBet * 2);
       onGameEnd('win');
       onWin(currentBet * 2);
     } else if (dealerValue > playerValue) {
       setMessage('Dealer wins!');
+      setWinAmount(-currentBet);
       onGameEnd('lose');
     } else if (dealerValue < playerValue) {
       setMessage('You win!');
+      setWinAmount(currentBet * 2);
       onGameEnd('win');
       onWin(currentBet * 2);
     } else {
       setMessage('Push!');
+      setWinAmount(currentBet);
       onGameEnd('push');
       onWin(currentBet);
     }
@@ -284,7 +362,11 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     setGameStatus('ended');
   };
 
-  // Place bet
+  /*
+  - Betting:
+  - Handles bet placement
+  - Validates bet amount against available chips
+  */
   const placeBet = (amount: number) => {
     if (amount > chips) {
       setMessage('Not enough chips!');
@@ -294,21 +376,31 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     setMessage('');
   };
 
+  /*
+  - Component Render:
+  - Renders the game interface
+  - Handles responsive layout
+  - Displays game state and controls
+  */
   return (
     <div className="flex flex-col items-center gap-6 p-4">
       {/* Rules Dropdown and Game Info Section */}
       <div className="flex flex-col items-center gap-6 w-full">
         <RulesDropdown gameName="Blackjack" rules={blackjackRules} />
-        {/* Game Info - Hide on mobile */}
-        <div className="text-2xl font-bold hidden lg:block">
-          Chips: {chips}
-        </div>
       </div>
 
       {/* Game Message */}
       {message && (
-        <div className="text-2xl font-bold text-center">
-          {message}
+        <div className="text-center space-y-2">
+          <div className="text-2xl font-bold">
+            {message}
+          </div>
+          {gameStatus === 'ended' && (
+            <div className={`text-xl font-bold ${winAmount >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {/* Display win or loss amount */}
+              {winAmount >= 0 ? '+' : '-'}${Math.abs(winAmount)}
+            </div>
+          )}
         </div>
       )}
 
@@ -380,6 +472,7 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
                   setCurrentBet(0);
                   setGameStatus('betting');
                   setMessage('');
+                  setWinAmount(0);
                 }}
                 className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >

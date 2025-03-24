@@ -1,9 +1,17 @@
+/*
+- Component: Footer
+- Purpose: Displays the footer section of the website
+- Features: About section, contact information, and copyright notice
+- Layout: Responsive grid layout with multiple sections
+*/
+
 import Link from 'next/link';
 
 export default function Footer() {
   return (
     <footer className="bg-black/50 backdrop-blur-sm border-t border-gray-700 mt-auto">
       <div className="container mx-auto px-4 py-6">
+        {/* Main Footer Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}
           <div>
@@ -14,8 +22,8 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Links 
-          <div>
+          {/* Quick Links Section (Currently Commented Out) */}
+          {/* <div>
             <h3 className="text-yellow-500 text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
@@ -34,9 +42,9 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>*/}
+          </div> */}
 
-          {/* Contact Info */}
+          {/* Contact Information Section */}
           <div>
             <h3 className="text-yellow-500 text-lg font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-2 text-gray-300">
@@ -46,7 +54,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
+        {/* Copyright Section */}
         <div className="mt-8 pt-6 border-t border-gray-700 text-center text-gray-400">
           <p>&copy; {new Date().getFullYear()} Virtual Casino. All rights reserved.</p>
         </div>

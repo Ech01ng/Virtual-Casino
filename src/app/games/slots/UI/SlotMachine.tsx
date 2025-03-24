@@ -4,17 +4,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import anime from 'animejs';
 import RulesDropdown from '../../../UI/RulesDropdown';
 
-/**
- * Slot Machine Component
- * Displays a 3-reel slot machine with spinning animation and game logic.
- */
+/*
+- Component: SlotMachine
+- Purpose: Implements a 3-reel slot machine with spinning animations and game logic
+- Features: Betting system, spinning animation, symbol matching, and win calculations
+*/
 
 interface SlotMachineProps {
   onSpin: (result: string[], bet: number) => void;
   chips: number;
 }
 
-// Add slot machine rules
+/*
+- Game Rules Configuration:
+- Defines the rules displayed in the RulesDropdown component
+- Each rule has a title and description explaining game mechanics
+- Includes information about winning combinations and payouts
+- Provides game statistics and tips
+*/
 const slotRules = [
   {
     title: "How to Play",
@@ -46,14 +53,30 @@ const slotRules = [
 ];
 
 export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
+  /*
+  - State Management:
+  - reels: Array of current symbols on each reel
+  - isSpinning: Flag for spinning animation state
+  - currentBet: Current bet amount
+  - reelRefs: Array of refs for each reel element
+  */
   const [reels, setReels] = useState(['7️⃣', '7️⃣', '7️⃣']);
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentBet, setCurrentBet] = useState(10);
   const reelRefs = useRef<(HTMLElement | null)[]>([]);
 
-  // Define available symbols
+  /*
+  - Symbol Configuration:
+  - Defines available symbols with their emoji representations
+  - Symbols are ordered by payout value (highest to lowest)
+  */
   const symbols = ['7️⃣', '🍒', '🍋', '🍊', '💎'];
 
+  /*
+  - Betting Functions:
+  - adjustBet: Handles bet amount adjustments
+  - Validates bet against available chips
+  */
   const adjustBet = (amount: number) => {
     const newBet = currentBet + amount;
     if (newBet >= 5 && newBet <= chips) {
@@ -61,9 +84,12 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
     }
   };
 
-  /**
-   * Generates a random symbol
-   */
+  /*
+  - Symbol Management Functions:
+  - getRandomSymbol: Generates a random symbol from the available set
+  - getPreviousSymbol: Gets the previous symbol in the sequence
+  - getNextSymbol: Gets the next symbol in the sequence
+  */
   const getRandomSymbol = () => {
     return symbols[Math.floor(Math.random() * symbols.length)];
   };
@@ -78,9 +104,12 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
     return symbols[(currentIndex + 1) % symbols.length];
   };
 
-  /**
-   * Handles the spin animation
-   */
+  /*
+  - Game Logic:
+  - spin: Handles the spinning animation and result determination
+  - Creates smooth spinning animation using anime.js
+  - Manages bet deduction and win calculation
+  */
   const spin = () => {
     if (currentBet > chips) {
       return;
@@ -144,6 +173,12 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
     animations.forEach(anim => anim?.play());
   };
 
+  /*
+  - Component Render:
+  - Renders the game interface
+  - Handles responsive layout
+  - Displays game state and controls
+  */
   return (
     <div className="flex flex-col items-center gap-6 p-4">
       {/* Rules Dropdown */}

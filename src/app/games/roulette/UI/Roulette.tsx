@@ -1,7 +1,19 @@
+/*
+- Component: Roulette
+- Purpose: Implements a fully functional roulette game with betting options and animations
+- Features: Number selection, color betting, even/odd betting, and win/loss tracking
+*/
+
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import RulesDropdown from '../../../UI/RulesDropdown';
+
+/*
+- Interface Definitions:
+- RouletteProps: Defines the props required by the component including callbacks for betting and winning
+- NumberData: Defines the structure of a roulette number with its color
+*/
 
 interface RouletteProps {
   chips: number;
@@ -9,7 +21,12 @@ interface RouletteProps {
   onWin: (amount: number) => void;
 }
 
-// Define roulette rules
+/*
+- Game Rules Configuration:
+- Defines the rules displayed in the RulesDropdown component
+- Each rule has a title and description explaining game mechanics
+- Includes information about betting options and payouts
+*/
 const rouletteRules = [
   {
     title: "Basic Rules",
@@ -29,12 +46,22 @@ const rouletteRules = [
   }
 ];
 
-// Define number types
+/*
+- Number Data Structure:
+- Defines the structure for each number on the roulette wheel
+- Includes the number value and its color (red, black, or green)
+*/
 interface NumberData {
   number: number;
   color: 'red' | 'black' | 'green';
 }
 
+/*
+- Roulette Numbers Configuration:
+- Defines all numbers on the roulette wheel with their colors
+- Uses -1 to represent '00' for simplicity
+- Numbers are arranged in the standard roulette layout
+*/
 const rouletteNumbers: NumberData[] = [
   { number: 0, color: 'green' },
   { number: -1, color: 'green' }, // Using -1 to represent '00'
@@ -77,6 +104,17 @@ const rouletteNumbers: NumberData[] = [
 ];
 
 export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
+  /*
+  - State Management:
+  - currentBet: Current bet amount
+  - selectedNumber: Selected number for straight bet
+  - selectedBetType: Type of bet (straight/color/even-odd)
+  - selectedColor: Selected color for color bet
+  - selectedEvenOdd: Selected even/odd for even-odd bet
+  - spinning: Flag for wheel spinning animation
+  - result: Winning number and color
+  - message: Display message for game events
+  */
   const [currentBet, setCurrentBet] = useState<number>(0);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [selectedBetType, setSelectedBetType] = useState<'straight' | 'color' | 'even-odd' | null>(null);
@@ -85,7 +123,20 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<NumberData | null>(null);
   const [message, setMessage] = useState<string>('');
+  
+  // Add ref for the result display section
+  const resultRef = useRef<HTMLDivElement>(null);
 
+  // Add ref for the rules section
+  const rulesRef = useRef<HTMLDivElement>(null);
+
+  /*
+  - Betting Functions:
+  - placeBet: Handles bet placement and validation
+  - selectNumber: Handles straight number selection
+  - selectColor: Handles color bet selection
+  - selectEvenOdd: Handles even/odd bet selection
+  */
   const placeBet = (amount: number) => {
     if (amount > chips) {
       setMessage('Not enough chips!');
@@ -116,6 +167,12 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
     setSelectedColor(null);
   };
 
+  /*
+  - Game Logic:
+  - spin: Handles the wheel spinning and result determination
+  - Calculates winnings based on bet type and multiplier
+  - Updates game state and player balance
+  */
   const spin = async () => {
     if (currentBet === 0) {
       setMessage('Please place a bet first!');
@@ -129,6 +186,15 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
 
     setSpinning(true);
     onBet(currentBet);
+
+    // Scroll to the rules section
+    setTimeout(() => {
+      rulesRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start',
+        inline: 'nearest'
+      });
+    }, 100);
 
     // Simulate wheel spinning
     await new Promise(resolve => setTimeout(resolve, 3000));
@@ -158,14 +224,19 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
     if (won) {
       const winnings = currentBet * (multiplier + 1); // Include original bet
       onWin(winnings);
-      setMessage(`You won $${winnings}!`);
+      setMessage('You won $' + winnings + '!');
     } else {
-      setMessage('Better luck next time!');
+      setMessage('Better luck next time! You lost $' + currentBet);
     }
 
     setSpinning(false);
   };
 
+  /*
+  - Reset Function:
+  - Resets all game state to initial values
+  - Clears all selections and messages
+  */
   const resetBets = () => {
     setCurrentBet(0);
     setSelectedNumber(null);
@@ -176,16 +247,22 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
     setMessage('');
   };
 
+  /*
+  - Component Render:
+  - Renders the game interface
+  - Handles responsive layout
+  - Displays game state and controls
+  */
   return (
     <div className="flex flex-col items-center gap-6 p-4">
       {/* Rules Dropdown and Game Info Section */}
-      <div className="flex flex-col items-center gap-6 w-full">
+      <div ref={rulesRef} className="flex flex-col items-center gap-6 w-full">
         <RulesDropdown gameName="Roulette" rules={rouletteRules} />
       </div>
 
       {/* Game Message */}
       {message && (
-        <div className="text-2xl font-bold text-center">
+        <div className="text-2xl font-bold text-center mb-4 text-white">
           {message}
         </div>
       )}
@@ -459,13 +536,7 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
           >
             Spin
           </button>
-          <button
-            onClick={resetBets}
-            disabled={spinning}
-            className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:bg-gray-500"
-          >
-            Reset
-          </button>
+          
         </div>
 
         {/* Balance and Bet Display */}

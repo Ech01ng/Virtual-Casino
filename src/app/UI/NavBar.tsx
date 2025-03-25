@@ -8,6 +8,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 /**
  * Navigation Bar Component
@@ -29,14 +30,22 @@ export default function NavBar() {
         <div className="flex justify-between items-center">
           {/* Casino Logo/Title Section */}
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-yellow-500">Virtual Casino</h1>
+            <Link href="/" className="text-2xl font-bold text-yellow-500">
+              The Echoing Retreat
+            </Link>
           </div>
 
           {/* Desktop Navigation Menu */}
           <nav className="hidden md:flex gap-6">
-            <a href="/" className="hover:text-yellow-500 transition-colors">Home</a>
-            <a href="/promotions" className="hover:text-yellow-500 transition-colors">Promotions</a>
-            <a href="/vip" className="hover:text-yellow-500 transition-colors">VIP</a>
+            <Link href="/" className="hover:text-yellow-500 transition-colors">
+              Home
+            </Link>
+            <Link href="/promotions" className="hover:text-yellow-500 transition-colors">
+              Promotions
+            </Link>
+            <Link href="/login" className="hover:text-yellow-500 transition-colors">
+              Login
+            </Link>
           </nav>
 
           {/* Mobile Menu Toggle Button */}
@@ -65,27 +74,27 @@ export default function NavBar() {
           isMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
         }`}>
           <nav className="py-4 flex flex-col gap-4">
-            <a 
+            <Link 
               href="/" 
               className="hover:text-yellow-500 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/promotions" 
               className="hover:text-yellow-500 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Promotions
-            </a>
-            <a 
-              href="/vip" 
+            </Link>
+            <Link 
+              href="/login" 
               className="hover:text-yellow-500 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              VIP
-            </a>
+              Login
+            </Link>
           </nav>
         </div>
       </div>

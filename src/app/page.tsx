@@ -8,6 +8,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import GameCardList from "./UI/GameCardList";
 import NavBar from './UI/NavBar';
 import Footer from './UI/Footer';
@@ -72,16 +73,16 @@ export default function Home() {
       <main className="flex-1 container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6">Welcome to The Virtual Casino</h1>
+          <h1 className="text-5xl font-bold mb-6">Welcome to The Echoing Retreat</h1>
           <p className="text-xl text-gray-300 mb-8">
             Experience the thrill of casino gaming from the comfort of your home
           </p>
-          <a
-            href="/vip"
+          <Link
+            href="/login"
             className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
           >
-            Join VIP Club
-          </a>
+            Join Now or Login
+          </Link>
         </section>
 
         {/* Featured Games Section */}
@@ -101,8 +102,8 @@ export default function Home() {
             <p className="text-gray-300">Play with confidence using our secure payment system.</p>
           </div>
           <div className="bg-gray-800 p-6 rounded-lg">
-            <h3 className="text-xl font-bold mb-4">VIP Rewards</h3>
-            <p className="text-gray-300">Exclusive benefits and rewards for our VIP members.</p>
+            <h3 className="text-xl font-bold mb-4">Your Own Account</h3>
+            <p className="text-gray-300">Manage your account and settings.</p>
           </div>
         </section>
       </main>

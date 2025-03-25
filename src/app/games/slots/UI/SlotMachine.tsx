@@ -58,11 +58,13 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
   - reels: Array of current symbols on each reel
   - isSpinning: Flag for spinning animation state
   - currentBet: Current bet amount
+  - result: Result message to be displayed
   - reelRefs: Array of refs for each reel element
   */
   const [reels, setReels] = useState(['7️⃣', '7️⃣', '7️⃣']);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [currentBet, setCurrentBet] = useState(10);
+  const [currentBet, setCurrentBet] = useState(0);
+  const [result, setResult] = useState<string | null>(null);
   const reelRefs = useRef<(HTMLElement | null)[]>([]);
 
   /*
@@ -79,6 +81,17 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
   */
   const adjustBet = (amount: number) => {
     const newBet = currentBet + amount;
+    if (newBet >= 5 && newBet <= chips) {
+      setCurrentBet(newBet);
+    }
+  };
+
+  const setBet = (amount: string) => {
+    if (amount === '') {
+      setCurrentBet(0);
+      return;
+    }
+    const newBet = parseInt(amount);
     if (newBet >= 5 && newBet <= chips) {
       setCurrentBet(newBet);
     }
@@ -112,10 +125,12 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
   */
   const spin = () => {
     if (currentBet > chips) {
+      setResult("Insufficient funds for current bet!");
       return;
     }
     
     setIsSpinning(true);
+    setResult(null);
     
     // Generate final results
     const finalResults = [
@@ -144,6 +159,20 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
         complete: () => {
           if (index === 2) { // Last reel
             setIsSpinning(false);
+            // Calculate if won and set result message
+            const allMatch = finalResults.every(symbol => symbol === finalResults[0]);
+            if (allMatch) {
+              const multiplier = 
+                finalResults[0] === '7️⃣' ? 100 :
+                finalResults[0] === '🍒' ? 50 :
+                finalResults[0] === '🍋' ? 25 :
+                finalResults[0] === '🍊' ? 15 :
+                10; // Diamond
+              const winAmount = currentBet * multiplier;
+              setResult(`Win: +$${winAmount}`);
+            } else {
+              setResult(`Lost: -$${currentBet}`);
+            }
             // Now only pass the results for win calculation
             onSpin(finalResults, 0);
           }
@@ -184,6 +213,38 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
       {/* Rules Dropdown */}
       <RulesDropdown gameName="Slot Machine" rules={slotRules} />
 
+      {/* Result Message */}
+      {result && (
+        <div 
+          className={`text-xl font-bold animate-fade-in ${
+            result.includes('Win') ? 'text-green-500' : 
+            result.includes('Lost') ? 'text-red-500' : 
+            'text-yellow-500 animate-shake'
+          }`}
+          style={{
+            animation: result.includes('Win') || result.includes('Lost') 
+              ? 'fadeIn 0.5s ease-in'
+              : 'fadeIn 0.5s ease-in, shake 0.5s ease-in-out'
+          }}
+        >
+          {result}
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          50% { transform: translateX(5px); }
+          75% { transform: translateX(-5px); }
+        }
+      `}</style>
+
       {/* Game Container Card */}
       <div className="w-full max-w-sm lg:max-w-md bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 shadow-xl">
         {/* Balance and Bet Display */}
@@ -195,21 +256,30 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
           <div className="flex items-center gap-2 lg:gap-4">
             <div className="flex flex-col items-end">
               <span className="text-base lg:text-xl font-bold">Bet:</span>
-              <span className="text-xl lg:text-2xl font-bold">${currentBet}</span>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => adjustBet(-5)}
-                className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center text-lg lg:text-xl"
-              >
-                -
-              </button>
-              <button
-                onClick={() => adjustBet(5)}
-                className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center text-lg lg:text-xl"
-              >
-                +
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => adjustBet(-5)}
+                  className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center text-lg lg:text-xl"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  value={currentBet || ''}
+                  onChange={(e) => setBet(e.target.value)}
+                  min={5}
+                  max={chips}
+                  placeholder="5"
+                  aria-label="Bet amount"
+                  className="w-20 lg:w-24 h-8 lg:h-10 bg-gray-700 rounded-lg text-center text-xl lg:text-2xl font-bold placeholder-gray-500"
+                />
+                <button
+                  onClick={() => adjustBet(5)}
+                  className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-700 rounded-lg hover:bg-gray-600 flex items-center justify-center text-lg lg:text-xl"
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -66,3 +66,12 @@ next-env.d.ts
 /public/audio/*
 /public/documents/*
 /public/downloads/*
+
+# Ignore node_modules
+/node_modules/*
+
+# Ignore backend
+/backend/node_modules/*
+/backend/.env
+/backend/src/database.sql
+

@@ -177,6 +177,16 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
     setMessage('');
   };
 
+  const setBet = (amount: string) => {
+    const newBet = parseInt(amount) || 0;
+    if (newBet > chips) {
+      setMessage('Not enough chips!');
+      return;
+    }
+    setCurrentBet(newBet);
+    setMessage('');
+  };
+
   const selectNumber = (number: number) => {
     setSelectedNumber(number);
     setSelectedBetType('straight');
@@ -301,10 +311,35 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
 
       {/* Game Message */}
       {message && (
-        <div className="text-2xl font-bold text-center mb-4 text-white">
+        <div 
+          className={`text-xl font-bold animate-fade-in ${
+            message.includes('won') ? 'text-green-500' : 
+            message.includes('lost') ? 'text-red-500' : 
+            'text-yellow-500 animate-shake'
+          }`}
+          style={{
+            animation: message.includes('won') || message.includes('lost')
+              ? 'fadeIn 0.5s ease-in'
+              : 'fadeIn 0.5s ease-in, shake 0.5s ease-in-out'
+          }}
+        >
           {message}
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          50% { transform: translateX(5px); }
+          75% { transform: translateX(-5px); }
+        }
+      `}</style>
 
       {/* Game Container Card */}
       <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
@@ -532,7 +567,19 @@ export default function Roulette({ chips, onBet, onWin }: RouletteProps) {
         </div>
 
         {/* Bet Controls */}
-        <div className="flex flex-wrap gap-2 justify-center mb-8">
+        <div className="flex flex-wrap gap-4 justify-center mb-8">
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={currentBet || ''}
+              onChange={(e) => setBet(e.target.value)}
+              min={0}
+              max={chips}
+              placeholder="5"
+              aria-label="Bet amount"
+              className="w-24 lg:w-32 h-10 bg-gray-700 rounded-lg text-center text-xl lg:text-2xl font-bold placeholder-gray-500"
+            />
+          </div>
           {[10, 25, 50, 100].map((amount) => (
             <button
               key={amount}

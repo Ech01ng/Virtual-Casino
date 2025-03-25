@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import NavBar from '../UI/NavBar';
-import Footer from '../UI/Footer';
+import NavBar from './NavBar';
+import Footer from './Footer';
 
 /**
  * Promotions Page Component

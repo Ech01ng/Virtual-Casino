@@ -245,12 +245,33 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     setPlayerHand(playerCards);
     setDealerHand(dealerCards);
 
+    // Check for Blackjack
+    const playerValue = calculateHandValue(playerCards);
+    const dealerValue = calculateHandValue(dealerCards);
+
+    if (playerValue === 21 && dealerValue !== 21) {
+      setMessage('Blackjack! You get 3.5x your bet!');
+      setWinAmount(currentBet * 3.5);
+      onGameEnd('win');
+      onWin(currentBet * 3.5);
+      setGameStatus('ended');
+      return;
+    } else if (dealerValue === 21) {
+      setMessage('Dealer has Blackjack! You lose your bet.');
+      setWinAmount(-currentBet);
+      onGameEnd('lose');
+      setGameStatus('ended');
+      return;
+    }
+
     // Animate cards appearing
     await Promise.all([
+      // Player cards
       animateCardAppearance(playerCards[0], playerHandRef.current!, 0, 0),
-      animateCardAppearance(playerCards[1], playerHandRef.current!, 200, 1),
+      animateCardAppearance(playerCards[1], playerHandRef.current!, 200, 1),// 200ms delay between cards
+      // Dealer cards
       animateCardAppearance(dealerCards[0], dealerHandRef.current!, 400, 0),
-      animateCardAppearance(dealerCards[1], dealerHandRef.current!, 600, 1)
+      animateCardAppearance(dealerCards[1], dealerHandRef.current!, 600, 1)// 600ms delay between cards
     ]);
 
     setIsDealing(false);
@@ -376,6 +397,16 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
     setMessage('');
   };
 
+  const setBet = (amount: string) => {
+    const newBet = parseInt(amount) || 0;
+    if (newBet > chips) {
+      setMessage('Not enough chips!');
+      return;
+    }
+    setCurrentBet(newBet);
+    setMessage('');
+  };
+
   /*
   - Component Render:
   - Renders the game interface
@@ -391,18 +422,40 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
 
       {/* Game Message */}
       {message && (
-        <div className="text-center space-y-2">
-          <div className="text-2xl font-bold">
-            {message}
-          </div>
-          {gameStatus === 'ended' && (
-            <div className={`text-xl font-bold ${winAmount >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {/* Display win or loss amount */}
-              {winAmount >= 0 ? '+' : '-'}${Math.abs(winAmount)}
+        <div 
+          className={`text-xl font-bold animate-fade-in ${
+            message.includes('You win') || message.includes('Push') ? 'text-green-500' : 
+            message.includes('lose') || message.includes('Bust') || message.includes('Dealer wins') ? 'text-red-500' : 
+            'text-yellow-500 animate-shake'
+          }`}
+          style={{
+            animation: message.includes('You win') || message.includes('lose') || message.includes('Push') || message.includes('Bust') || message.includes('Dealer wins')
+              ? 'fadeIn 0.5s ease-in'
+              : 'fadeIn 0.5s ease-in, shake 0.5s ease-in-out'
+          }}
+        >
+          {message}
+          {gameStatus === 'ended' && winAmount !== 0 && (
+            <div className={`mt-2 ${winAmount > 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {winAmount > 0 ? '+' : '-'}${Math.abs(winAmount)}
             </div>
           )}
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          50% { transform: translateX(5px); }
+          75% { transform: translateX(-5px); }
+        }
+      `}</style>
 
       {/* Game Container Card */}
       <div className="w-full max-w-4xl bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
@@ -432,13 +485,23 @@ export default function Blackjack({ onGameEnd, chips, onBet, onWin }: BlackjackP
                         : 'bg-gray-700 text-white hover:bg-gray-600'
                     }`}
                   >
-                    {amount}
+                    ${amount}
                   </button>
                 ))}
+                <input
+                  type="number"
+                  value={currentBet || ''}
+                  onChange={(e) => setBet(e.target.value)}
+                  min={0}
+                  max={chips}
+                  placeholder="5"
+                  aria-label="Bet amount"
+                  className="w-24 lg:w-32 h-10 bg-gray-700 rounded-lg text-center text-xl lg:text-2xl font-bold placeholder-gray-500"
+                />
                 <button
                   onClick={startGame}
                   disabled={currentBet === 0 || isDealing}
-                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-500"
+                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-500 w-full mt-4"
                 >
                   Deal
                 </button>

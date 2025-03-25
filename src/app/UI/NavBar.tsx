@@ -44,7 +44,7 @@ export default function NavBar() {
               Promotions
             </Link>
             <Link href="/login" className="hover:text-yellow-500 transition-colors">
-              Login
+              Login / Register
             </Link>
           </nav>
 
@@ -93,7 +93,7 @@ export default function NavBar() {
               className="hover:text-yellow-500 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Login
+              Login / Register
             </Link>
           </nav>
         </div>

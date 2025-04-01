@@ -100,6 +100,7 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Username */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium mb-2">
                 Username *
@@ -115,6 +116,7 @@ export default function RegisterPage() {
               />
             </div>
 
+            {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email (Optional)
@@ -130,6 +132,7 @@ export default function RegisterPage() {
               />
             </div>
 
+            {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-2">
                 Password *
@@ -146,7 +149,9 @@ export default function RegisterPage() {
               />
             </div>
 
+            {/* Confirm Password */}
             <div>
+              {/* Pop up for length should not show up here */}
               <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
                 Confirm Password *
               </label>

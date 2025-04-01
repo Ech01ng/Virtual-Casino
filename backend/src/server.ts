@@ -93,8 +93,8 @@ const registerHandler: RequestHandler = async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error details:', error);
-    res.status(500).json({ 
-      error: 'Internal server error', 
+    res.status(500).json({
+      error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }

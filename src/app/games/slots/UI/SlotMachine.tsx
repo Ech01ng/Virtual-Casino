@@ -91,8 +91,9 @@ export default function SlotMachine({ onSpin, chips }: SlotMachineProps) {
       setCurrentBet(0);
       return;
     }
+    // Change 5 to 1 for minimum bet
     const newBet = parseInt(amount);
-    if (newBet >= 5 && newBet <= chips) {
+    if (newBet >= 1 && newBet <= chips) {
       setCurrentBet(newBet);
     }
   };

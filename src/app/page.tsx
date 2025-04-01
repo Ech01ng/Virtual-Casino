@@ -81,7 +81,7 @@ export default function Home() {
             href="/login"
             className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
           >
-            Join Now or Login
+            Login Now
           </Link>
         </section>
 
